@@ -6,6 +6,7 @@ import Footer from '../../components/Footer.astro';
 import FormattedDate from '../../components/FormattedDate.astro';
 import Header from '../../components/Header.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
+
 // Obtenemos los posts, filtramos los borradores y ordenamos por destacado y luego por fecha
 const posts = (await getCollection('blog'))
 	.filter((post) => !post.data.draft)
@@ -24,24 +25,40 @@ const posts = (await getCollection('blog'))
 	<body>
 		<Header />
 		<main class="container mx-auto px-4 py-12 max-w-7xl">
-			<h1 class="text-4xl md:text-5xl font-bold text-center mb-12">Blog y Novedades</h1>
+			<h1 class="text-4xl md:text-5xl font-bold text-center mb-8">Blog y Novedades</h1>
+
+			<!-- Aviso de filtro activo por Categoría o Etiqueta -->
+			<div id="filtro-activo" class="hidden mb-10 flex flex-wrap items-center justify-center gap-3">
+				<span class="text-base md:text-lg">
+					Mostrando artículos de <strong id="filtro-nombre" class="text-primary"></strong>
+				</span>
+				<a href="/blog" class="btn btn-xs sm:btn-sm btn-outline">
+					Limpiar filtro
+				</a>
+			</div>
+
 			<section>
-				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+				<div id="grid-blog" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 					{posts.map((post: any, index: number) => (
-						<div class={`card bg-base-100 shadow-xl transition-transform hover:-translate-y-2 border border-base-200 ${index === 0 ? 'md:col-span-2 lg:col-span-3 md:flex-row' : ''}`}>
-							<figure class={index === 0 ? 'md:w-1/2' : ''}>
+						<div
+							class={`post-item card bg-base-100 shadow-xl transition-transform hover:-translate-y-2 border border-base-200 ${index === 0 ? 'post-destacado-layout md:col-span-2 lg:col-span-3 md:flex-row' : ''}`}
+							data-categoria={post.data.categoria || ''}
+							data-categorias={JSON.stringify(post.data.categories || [])}
+							data-tags={JSON.stringify(post.data.tags || [])}
+						>
+							<figure class={index === 0 ? 'post-figure md:w-1/2' : ''}>
   								<a href={`/blog/${post.id}/`} class="w-full h-full block bg-base-200 rounded-xl overflow-hidden">
     								{post.data.heroImage && (
       									<Image 
         								width={720} height={360} 
         								src={post.data.heroImage} 
         								alt={post.data.title} 
-        								class={`w-full object-cover ${index === 0 ? 'h-64 md:h-full' : 'h-48'}`} 
+        								class={`post-img w-full object-cover ${index === 0 ? 'h-64 md:h-full' : 'h-48'}`} 
       									/>
     								)}
   								</a>
 							</figure>
-							<div class={`card-body ${index === 0 ? 'md:w-1/2 justify-center' : ''}`}>
+							<div class={`post-body card-body ${index === 0 ? 'md:w-1/2 justify-center' : ''}`}>
 								<div class="flex items-center gap-2 mb-2">
 									{post.data.categoria && (
 										<span class="badge badge-primary badge-sm">{post.data.categoria}</span>
@@ -50,7 +67,7 @@ const posts = (await getCollection('blog'))
 										<span class="badge badge-accent badge-sm">¡Destacado!</span>
 									)}
 								</div>
-								<h2 class={`card-title font-bold ${index === 0 ? 'text-3xl md:text-4xl' : 'text-xl md:text-2xl'}`}>
+								<h2 class={`post-title card-title font-bold ${index === 0 ? 'text-3xl md:text-4xl' : 'text-xl md:text-2xl'}`}>
 									<a href={`/blog/${post.id}/`} class="hover:text-primary transition-colors">
 										{post.data.title}
 									</a>
@@ -70,8 +87,78 @@ const posts = (await getCollection('blog'))
 						</div>
 					))}
 				</div>
+
+				<div id="sin-articulos" class="hidden text-center py-16">
+					<h3 class="text-2xl font-bold opacity-60">No se encontraron artículos con este filtro.</h3>
+					<a href="/blog" class="btn btn-outline mt-6">Ver todos los artículos</a>
+				</div>
 			</section>
 		</main>
 		<Footer />
 	</body>
 </html>
+
+<script is:inline>
+	document.addEventListener('DOMContentLoaded', () => {
+		const params = new URLSearchParams(window.location.search);
+		const categoriaFiltro = params.get('categoria');
+		const tagFiltro = params.get('tag');
+
+		if (!categoriaFiltro && !tagFiltro) return;
+
+		const filtroActivo = document.getElementById('filtro-activo');
+		const filtroNombre = document.getElementById('filtro-nombre');
+		const sinArticulos = document.getElementById('sin-articulos');
+		const items = document.querySelectorAll('.post-item');
+
+		if (filtroActivo && filtroNombre) {
+			filtroActivo.classList.remove('hidden');
+			filtroNombre.textContent = categoriaFiltro ? `categoría "${categoriaFiltro}"` : `#${tagFiltro}`;
+		}
+
+		let visibles = 0;
+		items.forEach((item) => {
+			const cat = item.getAttribute('data-categoria') || '';
+			const cats = JSON.parse(item.getAttribute('data-categorias') || '[]');
+			const tags = JSON.parse(item.getAttribute('data-tags') || '[]');
+
+			let coincide = true;
+			if (categoriaFiltro) {
+				coincide = cat === categoriaFiltro || cats.includes(categoriaFiltro);
+			}
+			if (tagFiltro) {
+				coincide = coincide && tags.includes(tagFiltro);
+			}
+
+			// Cuando hay un filtro activo, mostramos todas las tarjetas en formato uniforme de cuadrícula
+			if (item.classList.contains('post-destacado-layout')) {
+				item.classList.remove('md:col-span-2', 'lg:col-span-3', 'md:flex-row');
+				const fig = item.querySelector('.post-figure');
+				const img = item.querySelector('.post-img');
+				const body = item.querySelector('.post-body');
+				const title = item.querySelector('.post-title');
+				if (fig) fig.classList.remove('md:w-1/2');
+				if (img) {
+					img.classList.remove('h-64', 'md:h-full');
+					img.classList.add('h-48');
+				}
+				if (body) body.classList.remove('md:w-1/2', 'justify-center');
+				if (title) {
+					title.classList.remove('text-3xl', 'md:text-4xl');
+					title.classList.add('text-xl', 'md:text-2xl');
+				}
+			}
+
+			if (coincide) {
+				item.style.display = '';
+				visibles++;
+			} else {
+				item.style.display = 'none';
+			}
+		});
+
+		if (visibles === 0 && sinArticulos) {
+			sinArticulos.classList.remove('hidden');
+		}
+	});
+</script>

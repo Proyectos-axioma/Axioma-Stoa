@@ -1,12 +1,14 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import CarruselDestacados from "../components/CarruselDestacados.astro";
+import HeroDestacados from "../components/HeroDestacados.astro";
 import CarruselCategorias from "../components/CarruselCategorias.astro";
-import OfertaEspecial from "../components/OfertaEspecial.astro";
+import ArticulosRecientes from "../components/ArticulosRecientes.astro";
 import { SITE_TITLE } from "../consts";
 ---
 <Layout title={SITE_TITLE}>
-    <CarruselDestacados />
-    <CarruselCategorias />
-    <OfertaEspecial />
+    <HeroDestacados />
+    <main class="container mx-auto px-4">
+        <CarruselCategorias />
+        <ArticulosRecientes />
+    </main>
 </Layout>

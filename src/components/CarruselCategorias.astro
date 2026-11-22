@@ -1,134 +1,286 @@
 ---
-// Categorias generales de productos
-import { getCollection } from 'astro:content';
+// Carrusel de Categorías y Etiquetas (Tags) del Blog
+import { getCollection, type CollectionEntry } from 'astro:content';
 import { Image } from 'astro:assets';
 import { Icon } from 'astro-icon/components';
-import type { CollectionEntry } from 'astro:content';
 
-const productos = await getCollection('productos');
-// Agrupamos las categorías, las contamos y extraemos una imagen de portada
-const categoriasMap = new Map();
-productos.forEach((p: CollectionEntry<'productos'>) => {
-    p.data.categorias.forEach((cat: string) => {
-        if (!categoriasMap.has(cat)) {
-            categoriasMap.set(cat, {
-                nombre: cat,
-                count: 1,
-// Usamos la imagen del primer producto que encontremos en esta categoría
-                imagen: p.data.imagenPrincipal
-            });
-        } else {
-            const data = categoriasMap.get(cat);
-            data.count += 1;
-            categoriasMap.set(cat, data);
-        }
-    });
+interface Props {
+	titulo?: string;
+	subtitulo?: string;
+	mostrarTags?: boolean;
+}
+
+const {
+	titulo = 'Explora por Temas',
+	subtitulo = 'Navega entre las categorías y etiquetas de nuestras publicaciones.',
+	mostrarTags = true,
+} = Astro.props;
+
+// Obtenemos todos los artículos publicados (excluyendo borradores)
+const posts = (await getCollection('blog'))
+	.filter((post: CollectionEntry<'blog'>) => !post.data.draft)
+	.sort((a: CollectionEntry<'blog'>, b: CollectionEntry<'blog'>) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+interface CategoriaInfo {
+	nombre: string;
+	count: number;
+	imagen: any;
+	tags: Set<string>;
+}
+
+const categoriasMap = new Map<string, CategoriaInfo>();
+const tagsMap = new Map<string, number>();
+
+posts.forEach((post: CollectionEntry<'blog'>) => {
+	// Unificamos `categoria` (string) y `categories` (array opcional)
+	const listaCategorias: string[] = [];
+	if (post.data.categoria && post.data.categoria.trim() !== '') {
+		listaCategorias.push(post.data.categoria.trim());
+	}
+	if (post.data.categories && post.data.categories.length > 0) {
+		post.data.categories.forEach((c: string) => {
+			if (!listaCategorias.includes(c)) listaCategorias.push(c);
+		});
+	}
+
+	const imagenPost = post.data.thumbnail ?? post.data.heroImage;
+
+	listaCategorias.forEach((cat) => {
+		if (!categoriasMap.has(cat)) {
+			categoriasMap.set(cat, {
+				nombre: cat,
+				count: 1,
+				imagen: imagenPost,
+				tags: new Set(post.data.tags ?? []),
+			});
+		} else {
+			const actual = categoriasMap.get(cat)!;
+			actual.count += 1;
+			if (!actual.imagen && imagenPost) {
+				actual.imagen = imagenPost;
+			}
+			(post.data.tags ?? []).forEach((t: string) => actual.tags.add(t));
+		}
+	});
+
+	// Conteo global de tags
+	(post.data.tags ?? []).forEach((tag: string) => {
+		tagsMap.set(tag, (tagsMap.get(tag) || 0) + 1);
+	});
 });
-// Convertimos el Map a un arreglo para iterarlo
+
 const categorias = Array.from(categoriasMap.values());
+const tags = Array.from(tagsMap.entries())
+	.map(([nombre, count]) => ({ nombre, count }))
+	.sort((a, b) => b.count - a.count || a.nombre.localeCompare(b.nombre));
 ---
-{categorias.length > 0 && (
-    <section class="py-12 my-8 relative max-w-7xl mx-auto px-4 md:px-8">
-<!-- Título centrado -->
-        <h2 class="text-3xl md:text-4xl font-bold text-center mb-10 tracking-wide">Categorías</h2>
-<!-- Contenedor relativo para posicionar las flechas -->
-        <div class="relative group">
-<!-- Carrusel -->
-            <div id="carrusel-colecciones" class="carousel w-full gap-6 scroll-smooth cursor-grab active:cursor-grabbing select-none overflow-x-auto no-scrollbar pb-6">
-                {categorias.map((cat) => (
-                    <div class="carousel-item flex-col w-72 md:w-[22rem] snap-start">
-                        <a href={`/productos?categoria=${encodeURIComponent(cat.nombre)}`} class="group/card block w-full">
-<!-- Caja de la imagen con fondo gris suave y bordes redondeados -->
-                            <div class="bg-base-200/50 rounded-xl overflow-hidden aspect-[4/3] mb-6 flex items-center justify-center p-4">
-                                <Image 
-                                src={cat.imagen} 
-                                alt={`Colección ${cat.nombre}`} 
-                                draggable="false"
-                                class="w-full h-full object-contain group-hover/card:scale-105
-                                transition-transform duration-500 drop-shadow-md"
-                                />
-                            </div>
-<!-- Textos inferiores -->
-                            <div class="text-center">
-                                <h3 class="text-xl md:text-2xl font-semibold mb-2">{cat.nombre}</h3>
-                                <p class="text-sm md:text-base opacity-60">
-                                    {cat.count} {cat.count === 1 ? 'item' : 'items'}
-                                </p>
-                            </div>
-                        </a>
-                    </div>
-                ))}
-            </div>
-<!-- Botones de navegación (Flechas) flotando sobre las imágenes -->
-<!-- Usamos top-[35%] para centrarlos verticalmente respecto a las fotos, no a todo el bloque -->
-            {categorias.length > 3 && (
-                <>
-                    <button id="btn-prev-col" class="absolute left-0 top-[35%] -translate-y-1/2 -translate-x-4 md:-translate-x-6 btn btn-square btn-md bg-base-100 shadow-xl opacity-0 group-hover:opacity-100 transition-opacity z-10 hidden md:flex hover:scale-110" aria-label="Anterior">
-                        <Icon name="tabler:arrow-left" class="w-5 h-5 text-base-content" />
-                    </button>
-                    <button id="btn-next-col" class="absolute right-0 top-[35%] -translate-y-1/2 translate-x-4 md:translate-x-6 btn btn-square btn-md bg-base-100 shadow-xl opacity-0 group-hover:opacity-100 transition-opacity z-10 hidden md:flex hover:scale-110" aria-label="Siguiente">
-                        <Icon name="tabler:arrow-right" class="w-5 h-5 text-base-content" />
-                    </button>
-                </>
-            )}
-        </div>
-    </section>
+
+{(categorias.length > 0 || tags.length > 0) && (
+	<section class="py-6 my-8 relative max-w-7xl mx-auto px-4 md:px-8">
+		<!-- Encabezado -->
+		<div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+			<div>
+				<h2 class="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight">
+					{titulo}
+				</h2>
+				{subtitulo && (
+					<p class="text-base md:text-lg opacity-70 mt-2 max-w-2xl">
+						{subtitulo}
+					</p>
+				)}
+			</div>
+		</div>
+
+		<!-- Carrusel de Categorías -->
+		{categorias.length > 0 && (
+			<div class="relative group/cat">
+				<div
+					id="carrusel-categorias"
+					class="carousel w-full gap-6 scroll-smooth cursor-grab active:cursor-grabbing select-none overflow-x-auto no-scrollbar pt-2 pb-6 px-1"
+				>
+					{categorias.map((cat) => {
+						const tagsCategoria = Array.from(cat.tags).slice(0, 3);
+						return (
+							<div class="carousel-item w-64 sm:w-72 md:w-80 flex-shrink-0 snap-start">
+								<a
+									href={`/blog?categoria=${encodeURIComponent(cat.nombre)}`}
+									draggable="false"
+									class="card bg-base-100 w-full shadow-lg border border-base-200 overflow-hidden group transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:border-primary/40"
+								>
+									<!-- Imagen representativa de la categoría -->
+									<figure class="relative h-40 w-full bg-base-200 overflow-hidden">
+										{cat.imagen ? (
+											<Image
+												src={cat.imagen}
+												alt={`Categoría ${cat.nombre}`}
+												width={500}
+												height={300}
+												draggable="false"
+												class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+											/>
+										) : (
+											<div class="w-full h-full flex items-center justify-center text-base-content/30">
+												<Icon name="tabler:article" class="w-14 h-14 stroke-1" />
+											</div>
+										)}
+										<!-- Badge contador flotante -->
+										<div class="absolute top-3 right-3">
+											<span class="badge badge-neutral font-semibold shadow-md">
+												{cat.count} {cat.count === 1 ? 'artículo' : 'artículos'}
+											</span>
+										</div>
+									</figure>
+
+									<!-- Información de la categoría -->
+									<div class="card-body p-5">
+										<div class="flex items-center justify-between gap-2">
+											<h3 class="text-xl font-bold group-hover:text-primary transition-colors">
+												{cat.nombre}
+											</h3>
+											<Icon
+												name="tabler:arrow-right"
+												class="w-5 h-5 text-primary opacity-70 transition-transform duration-300 group-hover:translate-x-1 group-hover:opacity-100"
+											/>
+										</div>
+
+										{tagsCategoria.length > 0 && (
+											<div class="flex flex-wrap gap-1.5 mt-2">
+												{tagsCategoria.map((tag) => (
+													<span class="badge badge-ghost badge-sm text-xs opacity-75">
+														#{tag}
+													</span>
+												))}
+											</div>
+										)}
+									</div>
+								</a>
+							</div>
+						);
+					})}
+				</div>
+
+				<!-- Flechas de navegación flotantes en escritorio -->
+				{categorias.length > 3 && (
+					<>
+						<button
+							id="btn-prev-cat"
+							class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 md:-translate-x-5 btn btn-circle btn-md bg-base-100 border border-base-300 shadow-xl opacity-0 group-hover/cat:opacity-100 transition-all z-10 hidden md:flex hover:scale-110"
+							aria-label="Categoría anterior"
+						>
+							<Icon name="tabler:arrow-left" class="w-5 h-5 text-base-content" />
+						</button>
+						<button
+							id="btn-next-cat"
+							class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 md:translate-x-5 btn btn-circle btn-md bg-base-100 border border-base-300 shadow-xl opacity-0 group-hover/cat:opacity-100 transition-all z-10 hidden md:flex hover:scale-110"
+							aria-label="Categoría siguiente"
+						>
+							<Icon name="tabler:arrow-right" class="w-5 h-5 text-base-content" />
+						</button>
+					</>
+				)}
+			</div>
+		)}
+
+		<!-- Carrusel de Etiquetas (Tags) deslizable -->
+		{mostrarTags && tags.length > 0 && (
+			<div class="mt-4 pt-6 border-t border-base-200">
+				<div class="flex items-center justify-between mb-3">
+					<span class="text-xs md:text-sm font-bold uppercase tracking-wider opacity-60">
+						Etiquetas populares
+					</span>
+				</div>
+				<div
+					id="carrusel-tags"
+					class="carousel w-full gap-3 scroll-smooth cursor-grab active:cursor-grabbing select-none overflow-x-auto no-scrollbar py-2"
+				>
+					{tags.map((tag) => (
+						<div class="carousel-item snap-start">
+							<a
+								href={`/blog?tag=${encodeURIComponent(tag.nombre)}`}
+								draggable="false"
+								class="btn btn-sm md:btn-md btn-outline border-base-300 bg-base-100 hover:btn-primary rounded-full gap-1.5 font-medium transition-all"
+							>
+								<span class="text-primary font-bold">#</span>
+								<span>{tag.nombre}</span>
+								<span class="badge badge-xs badge-ghost ml-1">{tag.count}</span>
+							</a>
+						</div>
+					))}
+				</div>
+			</div>
+		)}
+	</section>
 )}
+
 <script is:inline>
-    document.addEventListener('DOMContentLoaded', () => {
-        const sliderCol = document.getElementById('carrusel-colecciones');
-        const btnPrev = document.getElementById('btn-prev-col');
-        const btnNext = document.getElementById('btn-next-col');
-        if (sliderCol) {
-// Lógica de las flechas
-            const scrollAmount = 350; 
-            if (btnPrev) {
-                btnPrev.addEventListener('click', () => {
-                    sliderCol.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-                });
-            }
-            if (btnNext) {
-                btnNext.addEventListener('click', () => {
-                    sliderCol.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-                });
-            }
-// Lógica de arrastrar con el mouse en PC
-            let isDown = false;
-            let isDragging = false;
-            let startX;
-            let scrollLeft;
-            sliderCol.addEventListener('mousedown', (e) => {
-                isDown = true;
-                isDragging = false;
-                startX = e.pageX - sliderCol.offsetLeft;
-                scrollLeft = sliderCol.scrollLeft;
-                sliderCol.style.scrollSnapType = 'none';
-            });
-            sliderCol.addEventListener('mouseleave', () => {
-                isDown = false;
-                sliderCol.style.scrollSnapType = '';
-            });
-            sliderCol.addEventListener('mouseup', () => {
-                isDown = false;
-                sliderCol.style.scrollSnapType = '';
-            });
-            sliderCol.addEventListener('mousemove', (e) => {
-                if (!isDown) return;
-                const x = e.pageX - sliderCol.offsetLeft;
-                if (Math.abs(x - startX) > 5) {
-                    isDragging = true;
-                }
-                e.preventDefault();
-                const walk = (x - startX) * 1.5;
-                sliderCol.scrollLeft = scrollLeft - walk;
-            });
-            sliderCol.addEventListener('click', (e) => {
-                if (isDragging) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    isDragging = false;
-                }
-            }, true);
-        }
-    });
+	document.addEventListener('DOMContentLoaded', () => {
+		const configurarCarruselArrastrable = (sliderId, btnPrevId, btnNextId, scrollAmount = 340) => {
+			const slider = document.getElementById(sliderId);
+			const btnPrev = btnPrevId ? document.getElementById(btnPrevId) : null;
+			const btnNext = btnNextId ? document.getElementById(btnNextId) : null;
+
+			if (!slider) return;
+
+			if (btnPrev) {
+				btnPrev.addEventListener('click', () => {
+					slider.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+				});
+			}
+
+			if (btnNext) {
+				btnNext.addEventListener('click', () => {
+					slider.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+				});
+			}
+
+			let isDown = false;
+			let isDragging = false;
+			let startX;
+			let scrollLeft;
+
+			slider.addEventListener('mousedown', (e) => {
+				isDown = true;
+				isDragging = false;
+				startX = e.pageX - slider.offsetLeft;
+				scrollLeft = slider.scrollLeft;
+				slider.style.scrollSnapType = 'none';
+			});
+
+			slider.addEventListener('mouseleave', () => {
+				isDown = false;
+				slider.style.scrollSnapType = '';
+			});
+
+			slider.addEventListener('mouseup', () => {
+				isDown = false;
+				slider.style.scrollSnapType = '';
+			});
+
+			slider.addEventListener('mousemove', (e) => {
+				if (!isDown) return;
+				const x = e.pageX - slider.offsetLeft;
+				if (Math.abs(x - startX) > 5) {
+					isDragging = true;
+				}
+				e.preventDefault();
+				const walk = (x - startX) * 1.5;
+				slider.scrollLeft = scrollLeft - walk;
+			});
+
+			slider.addEventListener(
+				'click',
+				(e) => {
+					if (isDragging) {
+						e.preventDefault();
+						e.stopPropagation();
+						isDragging = false;
+					}
+				},
+				true
+			);
+		};
+
+		configurarCarruselArrastrable('carrusel-categorias', 'btn-prev-cat', 'btn-next-cat', 350);
+		configurarCarruselArrastrable('carrusel-tags', null, null, 250);
+	});
 </script>

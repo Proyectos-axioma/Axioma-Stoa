@@ -1,14 +1,34 @@
 ---
-title: "Cómo configurar la iluminación inteligente en tu cuarto"
-description: "Paso a paso para conectar tus lámparas WiFi y controlarlas con asistentes de voz."
-pubDate: "2026-05-12"
-updatedDate: "2026-11-14"
-heroImage: "../../assets/Placeholder2.svg"
-categoria: "Hogar Inteligente"
-tags: ["iluminación", "tutorial", "smarthome"]
+title: "Diseño de interfaces en modo oscuro: Más allá de invertir colores"
+seoTitle: "Guía de Diseño UI en Modo Oscuro | Proyectos Axioma"
+description: "Aprende a manejar el contraste, las elevaciones y la saturación tipográfica para crear temas oscuros cómodos para la vista."
+pubDate: "2026-11-12"
+updatedDate: "2026-11-19"
+heroImage: "../../assets/Placeholder.svg"
+author: "Proyectos Axioma"
+categoria: "Diseño UI/UX"
+tags: ["diseño", "ui", "accesibilidad", "tailwind", "daisyui"]
+destacado: true
 tiempoLectura: 6
 ---
 
-Las lámparas inteligentes son el primer paso para domotizar tu casa. En esta guía te enseñamos a sincronizar tu nueva Lámpara Curva Axioma con tu red local sin perder la paciencia en el intento.
+El modo oscuro dejó de ser un extra estético para convertirse en un estándar de accesibilidad y confort visual. Sin embargo, uno de los errores más frecuentes al diseñar interfaces oscuras es usar negro puro (`#000000`) con texto blanco puro (`#FFFFFF`).
 
-*Actualización Noviembre:* Hemos añadido los pasos para la integración con los nuevos routers 5G.
+En **Proyectos Axioma** cuidamos cada detalle cromático de nuestras plantillas para que la lectura nocturna sea natural y descansada.
+
+## Tres reglas de oro para un buen Dark Mode
+
+### 1. Evita el contraste extremo (Efecto Halación)
+
+Cuando un texto blanco brillante se coloca sobre un fondo negro absoluto, la luz se dispersa en el ojo humano provocando fatiga visual, especialmente en personas con astigmatismo. En su lugar:
+
+- Utiliza grises carbón o tonos pizarra profundos para el fondo base.
+- Suaviza el texto principal a un blanco ligeramente cálido o gris muy claro (`85% - 92%` de luminosidad).
+
+### 2. Elevación mediante iluminación, no solo sombras
+
+En un tema claro, las tarjetas se separan del fondo mediante sombras oscuras. En un tema oscuro, las sombras apenas se perciben; por ello conviene **aclarar sutilmente la superficie** cuanto más cercana esté al usuario y acompañarla de un borde sutil (`border-base-200` o `border-base-300`).
+
+### 3. Desatura los colores de acento
+
+Los colores primarios muy saturados que lucen bien sobre blanco suelen "vibrar" sobre fondos oscuros. Reducir ligeramente la saturación mantiene la legibilidad y la armonía visual.

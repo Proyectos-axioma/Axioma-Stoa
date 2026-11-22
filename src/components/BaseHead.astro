@@ -37,8 +37,8 @@ const { title, description = SITE_DESCRIPTION, image = FallbackImage } = Astro.p
 <!-- Inicialización temprana del tema para evitar parpadeo (FOUC) -->
 <script is:inline>
 	(function () {
-		const TEMA_CLARO = 'corporate';
-		const TEMA_OSCURO = 'business';
+		const TEMA_CLARO = 'lofi';
+		const TEMA_OSCURO = 'black';
 		const temaGuardado = localStorage.getItem('preferencia-tema');
 		const sistemaOscuro = window.matchMedia('(prefers-color-scheme: dark)').matches;
 		const esOscuro = temaGuardado === 'oscuro' || (!temaGuardado && sistemaOscuro);

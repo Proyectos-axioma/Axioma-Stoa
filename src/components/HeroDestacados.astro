@@ -1,0 +1,274 @@
+---
+// Carrusel Hero de artículos destacados
+import { getCollection, type CollectionEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import { Icon } from 'astro-icon/components';
+import FormattedDate from './FormattedDate.astro';
+
+const posts = await getCollection('blog');
+
+// Filtramos artículos publicados y marcados como destacados, ordenados por fecha
+const destacados = posts
+	.filter((post: CollectionEntry<'blog'>) => !post.data.draft && post.data.destacado === true)
+	.sort((a: CollectionEntry<'blog'>, b: CollectionEntry<'blog'>) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+---
+
+{destacados.length > 0 && (
+	<section class="relative w-full mb-12 group/hero">
+		<!-- Carrusel principal -->
+		<div
+			id="carrusel-hero"
+			class="carousel w-full scroll-smooth cursor-grab active:cursor-grabbing select-none overflow-x-auto no-scrollbar"
+		>
+			{destacados.map((post: CollectionEntry<'blog'>, index: number) => {
+				const imagenHero = post.data.heroImage ?? post.data.thumbnail;
+				return (
+					<div id={`slide-${index}`} class="carousel-item relative w-full snap-start">
+						<div class="hero min-h-[62vh] bg-base-200 pb-14 lg:pb-0 pointer-events-none">
+							<div class="hero-content flex-col lg:flex-row-reverse w-full max-w-7xl justify-between gap-8 lg:gap-12 px-4 py-10 lg:p-12 pointer-events-auto">
+								<!-- Imagen del artículo destacado -->
+								<div class="w-full max-w-md lg:max-w-xl flex-shrink-0">
+									<a
+										href={`/blog/${post.id}/`}
+										draggable="false"
+										class="block rounded-2xl overflow-hidden shadow-2xl border border-base-300 bg-base-100 group"
+									>
+										{imagenHero ? (
+											<Image
+												src={imagenHero}
+												alt={post.data.title}
+												width={720}
+												height={450}
+												draggable="false"
+												class="w-full aspect-[16/10] object-cover transition-transform duration-500 group-hover:scale-105"
+											/>
+										) : (
+											<div class="w-full aspect-[16/10] flex items-center justify-center bg-base-300 text-base-content/30">
+												<Icon name="tabler:article" class="w-20 h-20 stroke-1" />
+											</div>
+										)}
+									</a>
+								</div>
+
+								<!-- Información del artículo -->
+								<div class="max-w-xl flex flex-col items-center text-center lg:items-start lg:text-left w-full">
+									<!-- Categoría y badge de destacado -->
+									<div class="flex flex-wrap items-center justify-center lg:justify-start gap-2 mb-4">
+										<span class="badge badge-accent font-semibold shadow-sm">
+											Destacado
+										</span>
+										{post.data.categoria && (
+											<span class="badge badge-primary badge-outline font-semibold">
+												{post.data.categoria}
+											</span>
+										)}
+									</div>
+
+									<!-- Título -->
+									<h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold leading-tight mb-4">
+										<a
+											href={`/blog/${post.id}/`}
+											draggable="false"
+											class="hover:text-primary transition-colors"
+										>
+											{post.data.title}
+										</a>
+									</h1>
+
+									<!-- Descripción -->
+									<p class="text-base sm:text-lg opacity-80 mb-6 line-clamp-3 leading-relaxed">
+										{post.data.description}
+									</p>
+
+									<!-- Metadatos: Autor, Fecha y Tiempo de lectura -->
+									<div class="flex flex-wrap items-center justify-center lg:justify-start gap-4 text-xs sm:text-sm opacity-75 mb-8 font-medium">
+										<span class="flex items-center gap-1.5">
+											<Icon name="tabler:user-edit" class="w-4 h-4 text-primary" />
+											{post.data.author}
+										</span>
+										<span>•</span>
+										<span class="flex items-center gap-1.5">
+											<Icon name="tabler:calendar" class="w-4 h-4 text-primary" />
+											<FormattedDate date={post.data.pubDate} />
+										</span>
+										{post.data.tiempoLectura && (
+											<>
+												<span>•</span>
+												<span class="flex items-center gap-1">
+													<Icon name="tabler:clock" class="w-4 h-4" />
+													{post.data.tiempoLectura} min de lectura
+												</span>
+											</>
+										)}
+									</div>
+
+									<!-- Botón CTA -->
+									<a
+										href={`/blog/${post.id}/`}
+										draggable="false"
+										class="btn btn-primary btn-md lg:btn-lg px-8 w-full sm:w-auto gap-2 group shadow-lg"
+									>
+										Leer artículo
+										<Icon
+											name="tabler:arrow-right"
+											class="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1"
+										/>
+									</a>
+								</div>
+							</div>
+						</div>
+					</div>
+				);
+			})}
+		</div>
+
+		<!-- Controles e indicadores cuando hay más de 1 artículo destacado -->
+		{destacados.length > 1 && (
+			<>
+				<!-- Flechas laterales en escritorio -->
+				<button
+					id="btn-prev-hero"
+					class="absolute left-4 top-1/2 -translate-y-1/2 btn btn-circle btn-md bg-base-100/80 backdrop-blur-sm border border-base-300 shadow-lg opacity-0 group-hover/hero:opacity-100 transition-all z-10 hidden lg:flex hover:scale-110"
+					aria-label="Artículo destacado anterior"
+				>
+					<Icon name="tabler:arrow-left" class="w-5 h-5 text-base-content" />
+				</button>
+				<button
+					id="btn-next-hero"
+					class="absolute right-4 top-1/2 -translate-y-1/2 btn btn-circle btn-md bg-base-100/80 backdrop-blur-sm border border-base-300 shadow-lg opacity-0 group-hover/hero:opacity-100 transition-all z-10 hidden lg:flex hover:scale-110"
+					aria-label="Siguiente artículo destacado"
+				>
+					<Icon name="tabler:arrow-right" class="w-5 h-5 text-base-content" />
+				</button>
+
+				<!-- Indicadores inferiores (puntos) -->
+				<div class="absolute bottom-5 w-full flex justify-center gap-3 z-10">
+					{destacados.map((_, index: number) => (
+						<button
+							type="button"
+							data-hero-dot={index}
+							class={`h-3 rounded-full transition-all duration-300 cursor-pointer ${
+								index === 0
+									? 'w-8 bg-primary'
+									: 'w-3 bg-base-content/25 hover:bg-base-content/60'
+							}`}
+							aria-label={`Ir al artículo destacado ${index + 1}`}
+						/>
+					))}
+				</div>
+			</>
+		)}
+	</section>
+)}
+
+<!-- Lógica de arrastre, flechas e indicadores para el Hero -->
+<script is:inline>
+	document.addEventListener('DOMContentLoaded', () => {
+		const slider = document.getElementById('carrusel-hero');
+		const btnPrev = document.getElementById('btn-prev-hero');
+		const btnNext = document.getElementById('btn-next-hero');
+		const dots = document.querySelectorAll('[data-hero-dot]');
+
+		if (slider) {
+			const irASlide = (index) => {
+				const slideWidth = slider.clientWidth;
+				slider.scrollTo({ left: slideWidth * index, behavior: 'smooth' });
+			};
+
+			const obtenerIndiceActual = () => {
+				const slideWidth = slider.clientWidth || 1;
+				return Math.round(slider.scrollLeft / slideWidth);
+			};
+
+			// Actualiza el punto activo al hacer scroll
+			const actualizarDots = () => {
+				const activo = obtenerIndiceActual();
+				dots.forEach((dot, idx) => {
+					if (idx === activo) {
+						dot.classList.add('w-8', 'bg-primary');
+						dot.classList.remove('w-3', 'bg-base-content/25');
+					} else {
+						dot.classList.remove('w-8', 'bg-primary');
+						dot.classList.add('w-3', 'bg-base-content/25');
+					}
+				});
+			};
+
+			slider.addEventListener('scroll', actualizarDots, { passive: true });
+
+			// Clic en los indicadores inferiores (sin provocar salto vertical de página)
+			dots.forEach((dot) => {
+				dot.addEventListener('click', () => {
+					const index = Number(dot.getAttribute('data-hero-dot'));
+					irASlide(index);
+				});
+			});
+
+			// Flechas anterior / siguiente
+			if (btnPrev) {
+				btnPrev.addEventListener('click', () => {
+					const actual = obtenerIndiceActual();
+					const total = dots.length;
+					const destino = actual > 0 ? actual - 1 : total - 1;
+					irASlide(destino);
+				});
+			}
+
+			if (btnNext) {
+				btnNext.addEventListener('click', () => {
+					const actual = obtenerIndiceActual();
+					const total = dots.length;
+					const destino = actual < total - 1 ? actual + 1 : 0;
+					irASlide(destino);
+				});
+			}
+
+			// Arrastre con el mouse en PC
+			let isDown = false;
+			let isDragging = false;
+			let startX;
+			let scrollLeft;
+
+			slider.addEventListener('mousedown', (e) => {
+				isDown = true;
+				isDragging = false;
+				startX = e.pageX - slider.offsetLeft;
+				scrollLeft = slider.scrollLeft;
+				slider.style.scrollSnapType = 'none';
+			});
+
+			slider.addEventListener('mouseleave', () => {
+				isDown = false;
+				slider.style.scrollSnapType = '';
+			});
+
+			slider.addEventListener('mouseup', () => {
+				isDown = false;
+				slider.style.scrollSnapType = '';
+			});
+
+			slider.addEventListener('mousemove', (e) => {
+				if (!isDown) return;
+				const x = e.pageX - slider.offsetLeft;
+				if (Math.abs(x - startX) > 5) {
+					isDragging = true;
+				}
+				e.preventDefault();
+				const walk = (x - startX) * 1.5;
+				slider.scrollLeft = scrollLeft - walk;
+			});
+
+			slider.addEventListener(
+				'click',
+				(e) => {
+					if (isDragging) {
+						e.preventDefault();
+						e.stopPropagation();
+						isDragging = false;
+					}
+				},
+				true
+			);
+		}
+	});
+</script>

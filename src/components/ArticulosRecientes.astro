@@ -1,0 +1,257 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection, type CollectionEntry } from 'astro:content';
+import { Icon } from 'astro-icon/components';
+import FormattedDate from './FormattedDate.astro';
+
+interface Props {
+	cantidad?: number;
+	titulo?: string;
+	subtitulo?: string;
+}
+
+const {
+	cantidad = 6,
+	titulo = 'Artículos Recientes',
+	subtitulo = 'Explora nuestras últimas publicaciones, análisis y novedades.',
+} = Astro.props;
+
+// Obtenemos los artículos publicados (sin borradores) ordenados del más reciente al más antiguo
+const articulosRecientes = (await getCollection('blog'))
+	.filter((post: CollectionEntry<'blog'>) => !post.data.draft)
+	.sort((a: CollectionEntry<'blog'>, b: CollectionEntry<'blog'>) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+	.slice(0, cantidad);
+---
+{articulosRecientes.length > 0 && (
+	<section class="py-4 my-8 relative max-w-7xl mx-auto px-4 md:px-8">
+<!-- Encabezado de la sección -->
+		<div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+			<div>
+				<h2 class="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight">
+					{titulo}
+				</h2>
+				{subtitulo && (
+					<p class="text-base md:text-lg opacity-70 mt-2 max-w-2xl">
+						{subtitulo}
+					</p>
+				)}
+			</div>
+			<a
+				href="/blog"
+				class="btn btn-outline btn-neutral group hidden md:inline-flex items-center gap-2 self-start md:self-auto"
+			>
+				Ver todo el blog
+				<Icon
+					name="tabler:arrow-right"
+					class="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1"
+				/>
+			</a>
+		</div>
+<!-- Contenedor relativo para posicionar las flechas en escritorio -->
+		<div class="relative group/carousel">
+<!-- Carrusel deslizable (Swipe en móvil / Drag y flechas en PC) -->
+			<div
+				id="carrusel-articulos"
+				class="carousel w-full gap-6 scroll-smooth cursor-grab active:cursor-grabbing select-none overflow-x-auto no-scrollbar pt-2 pb-8 px-1"
+			>
+				{articulosRecientes.map((post: CollectionEntry<'blog'>) => {
+					const imagenTarjeta = post.data.thumbnail ?? post.data.heroImage;
+					return (
+						<article class="carousel-item w-72 sm:w-80 md:w-96 flex-shrink-0 snap-start card bg-base-100 shadow-xl border border-base-200 overflow-hidden group transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl flex flex-col">
+<!-- Imagen con efecto zoom suave y etiquetas flotantes -->
+							<figure class="relative h-52 w-full bg-base-200 overflow-hidden">
+								<a href={`/blog/${post.id}/`} draggable="false" class="w-full h-full block">
+									{imagenTarjeta ? (
+										<Image
+											src={imagenTarjeta}
+											alt={post.data.title}
+											width={600}
+											height={360}
+											draggable="false"
+											class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+										/>
+									) : (
+										<div class="w-full h-full flex items-center justify-center text-base-content/30">
+											<Icon name="tabler:article" class="w-16 h-16 stroke-1" />
+										</div>
+									)}
+								</a>
+
+<!-- Badges sobre la imagen -->
+								<div class="absolute top-4 left-4 flex flex-wrap gap-2 pointer-events-none">
+									{post.data.categoria && (
+										<span class="badge badge-primary font-semibold shadow-md">
+											{post.data.categoria}
+										</span>
+									)}
+									{post.data.destacado && (
+										<span class="badge badge-accent font-semibold shadow-md">
+											Destacado
+										</span>
+									)}
+								</div>
+							</figure>
+
+<!-- Cuerpo de la tarjeta -->
+							<div class="card-body p-6 flex-1 flex flex-col justify-between">
+								<div>
+									<!-- Metadatos: Fecha y Tiempo de lectura -->
+									<div class="flex flex-wrap items-center gap-3 text-xs md:text-sm opacity-70 mb-3 font-medium">
+										<span class="flex items-center gap-1.5">
+											<Icon name="tabler:calendar" class="w-4 h-4 text-primary" />
+											<FormattedDate date={post.data.pubDate} />
+										</span>
+
+										{post.data.tiempoLectura && (
+											<>
+												<span>•</span>
+												<span class="flex items-center gap-1">
+													<Icon name="tabler:clock" class="w-4 h-4" />
+													{post.data.tiempoLectura} min
+												</span>
+											</>
+										)}
+									</div>
+
+<!-- Título del artículo -->
+									<h3 class="card-title text-xl font-bold leading-snug mb-3 line-clamp-2">
+										<a
+											href={`/blog/${post.id}/`}
+											draggable="false"
+											class="hover:text-primary transition-colors"
+										>
+											{post.data.title}
+										</a>
+									</h3>
+
+<!-- Resumen -->
+									<p class="opacity-75 text-sm line-clamp-3 leading-relaxed">
+										{post.data.description}
+									</p>
+								</div>
+
+<!-- Pie de la tarjeta: Autor y enlace -->
+								<div class="pt-4 mt-6 border-t border-base-200 flex items-center justify-between">
+									<span class="text-xs md:text-sm font-semibold opacity-80 flex items-center gap-1.5">
+										<Icon name="tabler:user-edit" class="w-4 h-4 text-primary" />
+										{post.data.author}
+									</span>
+
+									<a
+										href={`/blog/${post.id}/`}
+										draggable="false"
+										class="text-sm font-bold text-primary inline-flex items-center gap-1 group/link"
+									>
+										Leer más
+										<Icon
+											name="tabler:arrow-right"
+											class="w-4 h-4 transition-transform duration-300 group-hover/link:translate-x-1"
+										/>
+									</a>
+								</div>
+							</div>
+						</article>
+					);
+				})}
+			</div>
+<!-- Flechas de navegación flotantes en escritorio -->
+			{articulosRecientes.length > 2 && (
+				<>
+					<button
+						id="btn-prev-articulos"
+						class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 md:-translate-x-5 btn btn-circle btn-md bg-base-100 border border-base-300 shadow-xl opacity-0 group-hover/carousel:opacity-100 transition-all z-10 hidden md:flex hover:scale-110"
+						aria-label="Artículo anterior"
+					>
+						<Icon name="tabler:arrow-left" class="w-5 h-5 text-base-content" />
+					</button>
+					<button
+						id="btn-next-articulos"
+						class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 md:translate-x-5 btn btn-circle btn-md bg-base-100 border border-base-300 shadow-xl opacity-0 group-hover/carousel:opacity-100 transition-all z-10 hidden md:flex hover:scale-110"
+						aria-label="Artículo siguiente"
+					>
+						<Icon name="tabler:arrow-right" class="w-5 h-5 text-base-content" />
+					</button>
+				</>
+			)}
+		</div>
+
+		<!-- Botón visible en móviles al final del carrusel -->
+		<div class="mt-4 text-center md:hidden">
+			<a href="/blog" class="btn btn-outline btn-neutral w-full sm:w-auto gap-2">
+				Ver todo el blog
+				<Icon name="tabler:arrow-right" class="w-5 h-5" />
+			</a>
+		</div>
+	</section>
+)}
+
+<script is:inline>
+	document.addEventListener('DOMContentLoaded', () => {
+		const sliderArticulos = document.getElementById('carrusel-articulos');
+		const btnPrev = document.getElementById('btn-prev-articulos');
+		const btnNext = document.getElementById('btn-next-articulos');
+
+		if (sliderArticulos) {
+			const scrollAmount = 400;
+
+			if (btnPrev) {
+				btnPrev.addEventListener('click', () => {
+					sliderArticulos.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+				});
+			}
+
+			if (btnNext) {
+				btnNext.addEventListener('click', () => {
+					sliderArticulos.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+				});
+			}
+
+			// Lógica de arrastrar con el mouse en PC
+			let isDown = false;
+			let isDragging = false;
+			let startX;
+			let scrollLeft;
+
+			sliderArticulos.addEventListener('mousedown', (e) => {
+				isDown = true;
+				isDragging = false;
+				startX = e.pageX - sliderArticulos.offsetLeft;
+				scrollLeft = sliderArticulos.scrollLeft;
+				sliderArticulos.style.scrollSnapType = 'none';
+			});
+
+			sliderArticulos.addEventListener('mouseleave', () => {
+				isDown = false;
+				sliderArticulos.style.scrollSnapType = '';
+			});
+
+			sliderArticulos.addEventListener('mouseup', () => {
+				isDown = false;
+				sliderArticulos.style.scrollSnapType = '';
+			});
+
+			sliderArticulos.addEventListener('mousemove', (e) => {
+				if (!isDown) return;
+				const x = e.pageX - sliderArticulos.offsetLeft;
+				if (Math.abs(x - startX) > 5) {
+					isDragging = true;
+				}
+				e.preventDefault();
+				const walk = (x - startX) * 1.5;
+				sliderArticulos.scrollLeft = scrollLeft - walk;
+			});
+
+			sliderArticulos.addEventListener(
+				'click',
+				(e) => {
+					if (isDragging) {
+						e.preventDefault();
+						e.stopPropagation();
+						isDragging = false;
+					}
+				},
+				true
+			);
+		}
+	});
+</script>

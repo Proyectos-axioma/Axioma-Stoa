@@ -2,45 +2,45 @@
 import Layout from '../layouts/Layout.astro';
 import { SITE_TITLE } from '../consts';
 ---
-<Layout title={`Sobre Nosotros | ${SITE_TITLE}`} description="Conoce más sobre nuestra historia, misión y valores.">
+<Layout title={`Sobre Nosotros | ${SITE_TITLE}`} description="Conoce más sobre la historia, propósito y línea editorial de nuestro blog.">
 	<main class="container mx-auto px-4 py-12 max-w-6xl">
 		<div class="text-center mb-16">
 			<h1 class="text-4xl md:text-6xl font-extrabold mb-4">Nuestra Historia</h1>
 			<p class="text-lg opacity-70 max-w-2xl mx-auto">
-				{SITE_TITLE} nació de una idea simple: ofrecer productos de alta calidad con un diseño excepcional, acercándolos a personas que valoran los detalles.
+				{SITE_TITLE} nació de una idea simple: crear un espacio de lectura claro y sin distracciones para compartir artículos, análisis y conocimiento con personas curiosas.
 			</p>
 		</div>
 <!-- Sección Imagen + Texto -->
 	    <div class="flex flex-col md:flex-row items-center gap-12 mb-20">
 			<div class="w-full md:w-1/2">
 <!-- Reemplaza el src con una imagen genérica o usa un div con bg-base-200 -->
-		        <div class="w-full aspect-[4/3] bg-base-200 rounded-3xl overflow-hidden shadow-xl flex items-center justify-center">
-        		    <span class="opacity-50">[Imagen del equipo o tienda física]</span>
+		        <div class="w-full aspect-[4/3] bg-base-200 rounded-3xl overflow-hidden shadow-xl flex items-center justify-center p-6 text-center">
+        		    <span class="opacity-50">[Imagen del autor, redacción o equipo editorial]</span>
         		</div>
       		</div>
       		<div class="w-full md:w-1/2 prose prose-lg text-base-content">
         		<h2>¿Quiénes somos?</h2>
 		        <p>
-					Somos un equipo apasionado por [Industria del cliente, ej: la tecnología / el diseño interior]. Nuestro objetivo es redefinir la forma en que interactúas con los productos del día a día.
+					Somos un espacio editorial apasionado por <strong>[Temática del blog, ej: la tecnología / la filosofía / la divulgación]</strong>. Nuestro objetivo es publicar artículos profundos, guías prácticas y reflexiones que aporten valor real a nuestros lectores.
         		</p>
 		        <p>
-					Trabajamos directamente con proveedores seleccionados para garantizar que cada artículo que llega a tus manos cumpla con los más altos estándares de calidad.
+					Investigamos y redactamos cada entrada con dedicación para garantizar que cada publicación que lees cumpla con los más altos estándares de claridad y rigor.
         		</p>
       		</div>
     	</div>
-<!-- Valores -->
+<!-- Valores Editoriales -->
 	    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
 			<div class="bg-base-200 p-8 rounded-2xl">
-        		<h3 class="text-2xl font-bold mb-3">Calidad</h3>
-        		<p class="opacity-70">Materiales de primera y procesos rigurosos en cada artículo de nuestro catálogo.</p>
+        		<h3 class="text-2xl font-bold mb-3">Rigor Editorial</h3>
+        		<p class="opacity-70">Fuentes verificadas, investigación cuidadosa y redacción clara en cada artículo publicado.</p>
 			</div>
 			<div class="bg-base-200 p-8 rounded-2xl">
-        		<h3 class="text-2xl font-bold mb-3">Compromiso</h3>
-        		<p class="opacity-70">Atención al cliente excepcional y tiempos de envío optimizados para tu comodidad.</p>
+        		<h3 class="text-2xl font-bold mb-3">Comunidad</h3>
+        		<p class="opacity-70">Un canal abierto al diálogo, la retroalimentación y el aprendizaje continuo con nuestros lectores.</p>
 			</div>
 			<div class="bg-base-200 p-8 rounded-2xl">
-        		<h3 class="text-2xl font-bold mb-3">Innovación</h3>
-        		<p class="opacity-70">Buscamos constantemente las últimas tendencias para mantener nuestro catálogo actualizado.</p>
+        		<h3 class="text-2xl font-bold mb-3">Divulgación</h3>
+        		<p class="opacity-70">Exploramos constantemente nuevas ideas y tendencias para explicarlas de forma accesible.</p>
       		</div>
     	</div>
 	</main>

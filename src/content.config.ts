@@ -68,38 +68,4 @@ const blog = defineCollection({
 		}),
 });
 
-// Valores para los productos
-const productos = defineCollection({
-	loader: glob({ base: './src/content/productos', pattern: '**/*.{md,mdx}' }),
-	schema: ({ image }) =>
-		z.object({
-			nombre: z.string().trim().min(1, 'El nombre del producto es obligatorio').catch('Producto sin nombre'),
-			descripcion: z.string().trim().min(1, 'La descripción es obligatoria').catch('Sin descripción disponible.'),
-			precio: z.coerce.number().min(0).catch(0),
-			precioDescuento: z.number().min(0).nullable().optional(), // <-- Propiedad opcional (soporta vacío/null en Keystatic)
-			categorias: z
-				.array(z.string())
-				.nullable()
-				.optional()
-				.transform((arr) => {
-					const limpias = (arr ?? []).map((s) => s.trim()).filter(Boolean);
-					return limpias.length > 0 ? limpias : ['General'];
-				}),
-			subcategorias: cleanStringArray,
-			imagenPrincipal: z.preprocess(
-				(val) => (typeof val === 'string' && val.trim() !== '' ? val : '../../assets/Placeholder.svg'),
-				image()
-			),
-// Validamos que sea un arreglo de imágenes con un máximo de 5 (ignorando items vacíos si el usuario olvidó subir foto)
-			imagenesSecundarias: z
-				.preprocess(
-					(val) => (Array.isArray(val) ? val.filter((item) => typeof item === 'string' && item.trim() !== '') : undefined),
-					z.array(image()).max(5).optional()
-				),
-			disponibilidad: z.boolean().nullable().optional().transform((val) => val ?? true),
-			destacado: z.boolean().nullable().optional().transform((val) => val ?? false),
-		}),
-});
-
-// Exportamos ambas colecciones
-export const collections = { blog, productos };
+export const collections = { blog };

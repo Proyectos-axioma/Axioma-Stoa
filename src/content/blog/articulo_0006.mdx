@@ -1,11 +1,33 @@
 ---
-title: "Mantenimiento preventivo: Cuida tus compras"
-description: "Consejos básicos para extender la vida útil de tus gadgets y evitar la garantía."
-pubDate: "2025-12-01"
-heroImage: "../../assets/Placeholder2.svg"
-author: "Equipo Axioma"
-categoria: "Tutoriales"
-tags: ["soporte", "hardware"]
+title: "Git-based CMS vs Bases de Datos Tradicionales: El poder de MDX"
+seoTitle: "Ventajas de un CMS basado en Git y MDX | Proyectos Axioma"
+description: "¿Por qué guardar tus artículos en archivos MDX dentro de Git es más seguro, rápido y económico que mantener un servidor con base de datos?"
+pubDate: "2026-11-08"
+heroImage: "../../assets/Placeholder1.svg"
+author: "Proyectos Axioma"
+categoria: "Desarrollo Web"
+tags: ["keystatic", "mdx", "git", "cms", "arquitectura"]
+tiempoLectura: 5
 ---
 
-Comprar un buen equipo es solo la mitad del trabajo. La otra mitad es no derramarle café encima. Aquí te dejamos tres tips de limpieza para tus electrónicos.
+Mantener un blog en plataformas tradicionales suele implicar actualizaciones constantes de plugins, parches de seguridad en bases de datos SQL y costos mensuales de servidores activos las 24 horas.
+
+En **Proyectos Axioma** apostamos por el flujo **Git-based CMS** integrando **Keystatic** y colecciones de contenido tipadas en Astro.
+
+## ¿Qué ganamos al usar archivos MDX en Git?
+
+1. **Control de versiones total:** Cada cambio en un artículo queda registrado en el historial de Git. Puedes revertir ediciones, trabajar en ramas y revisar exactamente qué cambió.
+2. **Seguridad inquebrantable:** Al compilarse a HTML estático, no existe una base de datos expuesta a inyecciones SQL ni paneles de administración vulnerables en producción.
+3. **Portabilidad absoluta:** Tus artículos son archivos de texto plano con formato Markdown y componentes. Nunca quedarás atrapado en un formato propietario.
+
+```yaml
+---
+title: "Mi artículo en MDX"
+author: "Proyectos Axioma"
+categoria: "Desarrollo Web"
+---
+```
+
+## Edición visual para todo el equipo
+
+Gracias a Keystatic, los redactores no necesitan tocar la terminal: pueden abrir `/keystatic`, escribir con un editor visual enriquecido, subir imágenes y guardar directamente.

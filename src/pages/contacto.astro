@@ -1,9 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { SITE_TITLE } from '../consts';
+import { SITE_TITLE, SITE_CONTACTO, SITE_CORREO } from '../consts';
 import { Icon } from 'astro-icon/components';
-import { SITE_CONTACTO } from '../consts';
-import { SITE_CORREO } from '../consts';
 function formatearTelefono(numero: string | number) {
 // Asegura que sea string y limpia cualquier carácter que no sea número
     const limpio = String(numero).replace(/\D/g, '');
@@ -13,11 +11,11 @@ function formatearTelefono(numero: string | number) {
 const telefonoFormateado = formatearTelefono(SITE_CONTACTO);
 ---
 
-<Layout title={`Contacto | ${SITE_TITLE}`} description="Ponte en contacto con nuestro equipo de atención al cliente.">
+<Layout title={`Contacto | ${SITE_TITLE}`} description="Ponte en contacto con el autor o equipo editorial del blog.">
     <main class="container mx-auto px-4 py-12 max-w-6xl">
         <div class="text-center mb-12">
             <h1 class="text-4xl md:text-5xl font-extrabold mb-4">Contáctanos</h1>
-            <p class="text-lg opacity-70">¿Tienes alguna duda o sugerencia? Estamos aquí para ayudarte.</p>
+            <p class="text-lg opacity-70">¿Tienes alguna duda, sugerencia de artículo o propuesta de colaboración? Estamos aquí para leerte.</p>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-12 bg-base-100 rounded-3xl shadow-xl overflow-hidden">
 <!-- Columna Izquierda: Información -->
@@ -29,8 +27,8 @@ const telefonoFormateado = formatearTelefono(SITE_CONTACTO);
                             <Icon name="tabler:map-pin" class="w-6 h-6" />
                         </div>
                         <div>
-                            <p class="font-bold">Nuestra Tienda</p>
-                            <p class="opacity-80">Av. Principal #123, Ciudad, País</p>
+                            <p class="font-bold">Redacción / Ubicación</p>
+                            <p class="opacity-80">[Ciudad, País o Redacción Digital]</p>
                         </div>
                     </div>
                     <div class="flex items-center gap-4">
@@ -38,7 +36,7 @@ const telefonoFormateado = formatearTelefono(SITE_CONTACTO);
                             <Icon name="tabler:phone" class="w-6 h-6" />
                         </div>
                         <div>
-                            <p class="font-bold">Teléfono</p>
+                            <p class="font-bold">Teléfono / WhatsApp</p>
                             <p class="opacity-80">{telefonoFormateado}</p>
                         </div>
                     </div>
@@ -47,7 +45,7 @@ const telefonoFormateado = formatearTelefono(SITE_CONTACTO);
                             <Icon name="tabler:mail" class="w-6 h-6" />
                         </div>
                         <div>
-                            <p class="font-bold">Correo Electrónico</p>
+                            <p class="font-bold">Correo Editorial</p>
                             <p class="opacity-80">{SITE_CORREO}</p>
                         </div>
                     </div>
@@ -66,7 +64,7 @@ const telefonoFormateado = formatearTelefono(SITE_CONTACTO);
                     </fieldset>
                     <fieldset class="fieldset w-full">
                         <label class="fieldset-label text-base font-semibold text-base-content" for="contacto-mensaje">Mensaje</label>
-                        <textarea id="contacto-mensaje" name="mensaje" class="textarea h-32 w-full" placeholder="¿En qué podemos ayudarte?" required></textarea>
+                        <textarea id="contacto-mensaje" name="mensaje" class="textarea h-32 w-full" placeholder="Cuéntanos tu comentario, sugerencia de tema o propuesta de colaboración..." required></textarea>
                     </fieldset>
                     <button type="submit" class="btn btn-success btn-lg w-full sm:w-auto shadow-lg hover:shadow-primary/50 transition-shadow">
                         <Icon name="tabler:brand-whatsapp" class="w-6 h-6" />

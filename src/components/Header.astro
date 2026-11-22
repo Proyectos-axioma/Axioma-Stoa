@@ -20,33 +20,23 @@ import { Icon } from 'astro-icon/components';
 <!--Opciones del drawer -->
                     <ul class="menu bg-base-200 min-h-full w-80 p-4 text-xl">
                         <div class="my-6 flex w-full font-semibold gap-2">
-                            <Icon name="tabler:building-store" class="w-6 h-6 stroke-2" />  {SITE_TITLE}
+                            <Icon name="tabler:writing-filled" class="w-6 h-6 stroke-2" />  {SITE_TITLE}
                         </div>
                         <li><HeaderLink href="/">Inicio</HeaderLink></li>
-                        <li><HeaderLink href="/productos">Productos</HeaderLink></li>
                         <li><HeaderLink href="/blog">Blog</HeaderLink></li>
                         <li><HeaderLink href="/nosotros">Sobre nosotros</HeaderLink></li>
+                        <li><HeaderLink href="/contacto">Contacto</HeaderLink></li>
                     </ul>
                 </div>
             </div>
 <!-- Logo y nombre del sitio -->
             <div class="px-1">
                 <a href="/" class="btn btn-ghost text-2xl">
-                    <Icon name="tabler:building-store" class="w-6 h-6 stroke-2" />  {SITE_TITLE}
+                    <Icon name="tabler:writing-filled" class="w-6 h-6 stroke-2" />  {SITE_TITLE}
                 </a>
             </div>
         </div>
-<!--Barra de busqueda -->
-        <div class="navbar-center flex-1 px-4">
-            <!-- Quitamos max-w-md, dejamos w-full -->
-            <form action="/productos" method="GET" class="w-full">
-                <label class="input w-full rounded-full flex items-center gap-2 bg-base-200">
-                    <input type="text" name="q" placeholder="Busca tu producto..." class="grow" />
-                    <Icon name="tabler:search" class="w-6 h-6 stroke-2" />
-                </label>
-            </form>
-        </div>
-        <div class="navbar-end w-auto px-4">
+        <div class="navbar-end flex-1 px-4 justify-end">
 <!--Botón para cambiar de temas -->
             <label class="swap swap-rotate btn btn-ghost btn-circle">
                 <input type="checkbox" id="theme-toggle" />
@@ -58,8 +48,8 @@ import { Icon } from 'astro-icon/components';
 </header>
 <script is:inline>
 //Temas
-    const TEMA_CLARO = 'corporate';
-    const TEMA_OSCURO = 'business';
+    const TEMA_CLARO = 'lofi';
+    const TEMA_OSCURO = 'black';
   
     const themeToggle = document.getElementById('theme-toggle');
     const htmlElement = document.documentElement;
