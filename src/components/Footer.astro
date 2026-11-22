@@ -1,0 +1,38 @@
+---
+import { Icon } from 'astro-icon/components';
+import { Facebook, SITE_TITLE, X, Instagram } from '../consts';
+import HeaderLink from './HeaderLink.astro';
+---
+
+<footer class="footer footer-horizontal footer-center bg-neutral text-neutral-content rounded p-10">
+    <nav class="grid grid-flow-col gap-4">
+        <HeaderLink href="/nosotros">Nosotros</HeaderLink>
+        <HeaderLink href="/terminos">Términos y condiciones</HeaderLink>
+        <HeaderLink href="/contacto">Contacto</HeaderLink>
+    </nav>
+    <nav>
+        <div class="grid grid-flow-col gap-4">
+            <a href={Facebook}>
+                <Icon name="tabler:brand-facebook" class="w-6 h-6 stroke-2" />
+            </a>
+            <a href={X}>
+                <Icon name="tabler:brand-x" class="w-6 h-6 stroke-2" />
+            </a>
+            <a href={Instagram}>
+                <Icon name="tabler:brand-instagram" class="w-6 h-6 stroke-2" />
+            </a>
+            <a href="https://github.com/Proyectos-axioma/Axioma-Agora">
+                <Icon name="tabler:brand-github" class="w-6 h-6 stroke-2" />
+            </a>
+        </div>
+    </nav>
+    <aside>
+        <p class="font-bold text-lg">
+            {SITE_TITLE}.
+        </p>
+        <p>
+            Copyright © {new Date().getFullYear()} - Todos los derechos reservados.
+        </p>
+        
+    </aside>
+</footer>

@@ -1,0 +1,12 @@
+---
+import Layout from "../layouts/Layout.astro";
+import CarruselDestacados from "../components/CarruselDestacados.astro";
+import CarruselCategorias from "../components/CarruselCategorias.astro";
+import OfertaEspecial from "../components/OfertaEspecial.astro";
+import { SITE_TITLE } from "../consts";
+---
+<Layout title={SITE_TITLE}>
+    <CarruselDestacados />
+    <CarruselCategorias />
+    <OfertaEspecial />
+</Layout>

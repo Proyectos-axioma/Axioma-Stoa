@@ -1,0 +1,44 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { SITE_TITLE } from '../consts';
+---
+<Layout title={`Términos y Condiciones | ${SITE_TITLE}`} description="Términos de servicio y políticas de uso de nuestra tienda.">
+    <main class="container mx-auto px-4 py-12">
+        <article class="prose prose-base md:prose-lg max-w-4xl mx-auto bg-base-100 p-8 md:p-16 rounded-3xl shadow-xl border border-base-200">
+            <div class="text-center mb-10">
+                <h1 class="mb-2">Términos y Condiciones</h1>
+                <p class="text-sm opacity-60 mt-0">Última actualización: Noviembre 2026</p>
+            </div>
+            <h2>1. Información General</h2>
+            <p>
+                Bienvenido a <strong>{SITE_TITLE}</strong>. Los presentes Términos y Condiciones regulan el uso de nuestro sitio web y la adquisición de productos a través del mismo. Al acceder a esta plataforma, aceptas estar sujeto a estas políticas. Te recomendamos leerlas detenidamente antes de realizar cualquier compra.
+            </p>
+            <h2>2. Productos y Disponibilidad</h2>
+            <p>
+                Nos esforzamos por mostrar con la mayor precisión posible los colores, características y detalles de nuestros productos. Sin embargo, no podemos garantizar que la pantalla de tu dispositivo muestre los colores de manera exacta. Todos los pedidos están sujetos a disponibilidad de inventario.
+            </p>
+            <h2>3. Precios y Pagos</h2>
+            <ul>
+                <li>Todos los precios mostrados incluyen el impuesto correspondiente (IVA), salvo indicación contraria.</li>
+                <li>Los gastos de envío se calcularán y mostrarán al momento de finalizar la compra.</li>
+                <li>Nos reservamos el derecho de modificar los precios en cualquier momento sin previo aviso.</li>
+            </ul>
+            <h2>4. Políticas de Envío</h2>
+            <p>
+                Los pedidos son procesados en un plazo de <strong>[1 a 3 días hábiles]</strong>. Los tiempos de tránsito dependen de la paquetería seleccionada y la zona de entrega. No nos hacemos responsables por demoras causadas por terceros o situaciones de fuerza mayor.
+            </p>
+            <h2>5. Cambios y Devoluciones</h2>
+            <p>
+                Aceptamos devoluciones dentro de los <strong>[15 días naturales]</strong> posteriores a la recepción del pedido, siempre y cuando el producto se encuentre en sus condiciones originales, sin uso y con sus etiquetas y empaques originales. Los gastos de envío por devolución corren a cargo del comprador.
+            </p>
+            <h2>6. Propiedad Intelectual</h2>
+            <p>
+                Todo el contenido incluido en este sitio, como textos, gráficos, logotipos e imágenes, es propiedad de <strong>{SITE_TITLE}</strong> o de sus proveedores de contenido, y está protegido por las leyes de propiedad intelectual internacionales.
+            </p>
+            <div class="divider mt-12"></div>
+            <p class="text-sm opacity-70 text-center italic">
+                *Nota para la plantilla: Este es un texto de ejemplo. El propietario de la tienda debe sustituir esta información con las políticas legales correspondientes a su país y modelo de negocio.
+            </p>
+        </article>
+    </main>
+</Layout>

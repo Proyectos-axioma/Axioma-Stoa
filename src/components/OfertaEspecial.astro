@@ -1,0 +1,51 @@
+---
+// src/components/OfertaEspecial.astro
+import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
+
+const productos = await getCollection('productos');
+// Filtramos solo los productos con descuento válido Y que tengan stock
+const ofertas = productos.filter(p => p.data.disponibilidad && p.data.precioDescuento != null && p.data.precioDescuento < p.data.precio);
+// Si no hay ninguna oferta activa, el componente se autodestruye y no renderiza nada
+if (ofertas.length === 0) {
+    return;
+}
+// Seleccionamos una oferta al azar
+const indiceAzar = Math.floor(Math.random() * ofertas.length);
+const productoOferta = ofertas[indiceAzar];
+// Calculamos el porcentaje de descuento automáticamente
+const precioNormal = productoOferta.data.precio;
+// TypeScript a veces requiere el "as number" aquí aunque ya validamos que existe
+const precioRebajado = productoOferta.data.precioDescuento as number; 
+const porcentajeDescuento = Math.round(((precioNormal - precioRebajado) / precioNormal) * 100);
+---
+<section class="py-8 my-12 px-4 max-w-7xl mx-auto">
+<!-- Contenedor principal con fondo gris claro y bordes muy redondeados -->
+    <div class="bg-base-200 rounded-[2rem] overflow-hidden flex flex-col md:flex-row items-center justify-between p-8 md:p-16 gap-8">
+    
+<!-- Columna Izquierda: Textos y Botón -->
+        <div class="flex-1 text-center md:text-left flex flex-col items-center md:items-start max-w-xl">
+            <span class="text-sm md:text-base font-bold uppercase tracking-wide mb-4">
+                Oferta especial
+            </span>
+<!-- Título principal inyectando el porcentaje calculado -->
+            <h2 class="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight mb-6">
+                {productoOferta.data.nombre} <br/> ¡Obtén un {porcentajeDescuento}% de descuento!
+            </h2>
+            <p class="text-base md:text-lg opacity-70 mb-8">
+                ¡No te lo pierdas!
+            </p>
+            <a href={`/productos/${productoOferta.id}`} class="btn btn-primary btn-lg rounded-none px-10">
+                Comprar ahora
+            </a>
+        </div>
+<!-- Columna Derecha: Imagen -->
+        <div class="flex-1 w-full max-w-sm md:max-w-md lg:max-w-lg">
+            <Image 
+            src={productoOferta.data.imagenPrincipal} 
+            alt={`Oferta en ${productoOferta.data.nombre}`} 
+            class="w-full h-auto object-contain drop-shadow-2xl"
+            />
+        </div>
+    </div>
+</section>

@@ -1,0 +1,44 @@
+---
+import { getCollection } from 'astro:content';
+import ProductoCard from './ProductoCard.astro';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+    categoriasActuales: string[];
+    subcategoriasActuales?: string[];
+    idActual: string;
+}
+const { categoriasActuales, subcategoriasActuales = [], idActual } = Astro.props;
+const productos = await getCollection('productos');
+// Filtramos los productos relacionados
+const relacionados = productos.filter((producto: CollectionEntry<'productos'>) => {
+    if (producto.id === idActual) return false;
+    const coincideCategoria = producto.data.categorias.some(cat => categoriasActuales.includes(cat));
+    const coincideSubcategoria = producto.data.subcategorias?.some(sub => subcategoriasActuales.includes(sub));
+    return coincideCategoria || coincideSubcategoria;
+});
+// Mezclamos al azar y tomamos solo los primeros 4
+const relacionadosAleatorios = relacionados.sort(() => 0.5 - Math.random()).slice(0, 4);
+---
+{relacionadosAleatorios.length > 0 && (
+    <section class="mt-12 md:mt-20 border-t border-base-300 pt-8 md:pt-12">
+<!-- Ajustamos márgenes en móvil (px-4) para que el título se alinee bien -->
+        <h2 class="text-2xl md:text-3xl font-bold mb-6 md:mb-8 px-4 md:px-0">También te podría interesar</h2>
+<!-- Para no perderme: Móvil: flex + overflow-x-auto + snap-x (carrusel)  /  Escritorio (md): grid + grid-cols-4 (cuadrícula clásica) -->
+        <div class="flex md:grid md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 overflow-x-auto snap-x snap-mandatory px-4 md:px-0 pb-8 no-scrollbar">
+<!-- Limitamos el ancho en móvil (w-64) para que se asome la siguiente tarjeta e invite a deslizar -->
+            {relacionadosAleatorios.map((producto: CollectionEntry<'productos'>) => (
+                <div class="w-64 sm:w-72 md:w-auto flex-shrink-0 snap-start">
+                    <ProductoCard 
+                    titulo={producto.data.nombre}
+                    precio={producto.data.precio}
+                    precioDescuento={producto.data.precioDescuento}
+                    imagen={producto.data.imagenPrincipal}
+                    disponible={producto.data.disponibilidad}
+                    url={`/productos/${producto.id}`} 
+                    />
+                </div>
+            ))}
+        </div>
+    </section>
+)}

@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <!-- Degradado de fondo (Modo oscuro elegante - Tailwind Slate) -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0F172A" />
+      <stop offset="100%" stop-color="#1E293B" />
+    </linearGradient>
+    
+    <!-- Degradado de acento (Azul/Cian vibrante - Tailwind Sky/Indigo) -->
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8" />
+      <stop offset="100%" stop-color="#6366F1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Contenedor principal redondeado tipo App de iOS -->
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)" />
+  
+  <!-- Sombra base inferior para dar profundidad -->
+  <ellipse cx="256" cy="450" rx="140" ry="12" fill="#000000" opacity="0.3" />
+
+  <!-- TECHO DEL ÁGORA (Formando la punta de la letra 'A') -->
+  <path d="M256 100 L110 250 H402 Z" fill="url(#accentGrad)" />
+  <!-- Detalle de luz volumétrica en el techo (Mitad derecha más clara) -->
+  <path d="M256 100 L256 250 H402 Z" fill="#FFFFFF" opacity="0.15" />
+  
+  <!-- Cornisa del techo -->
+  <rect x="90" y="250" width="332" height="24" rx="8" fill="#F1F5F9" />
+  
+  <!-- PILARES DEL MERCADO (Las piernas de la letra 'A') -->
+  <!-- Pilar Izquierdo -->
+  <rect x="140" y="274" width="48" height="136" fill="#E2E8F0" />
+  <rect x="164" y="274" width="24" height="136" fill="#94A3B8" opacity="0.2" /> <!-- Sombreado del pilar -->
+  
+  <!-- Pilar Derecho -->
+  <rect x="324" y="274" width="48" height="136" fill="#E2E8F0" />
+  <rect x="348" y="274" width="24" height="136" fill="#94A3B8" opacity="0.2" /> <!-- Sombreado del pilar -->
+
+  <!-- TRAVESAÑO (El centro de la letra 'A' y mostrador del mercado) -->
+  <rect x="140" y="324" width="232" height="36" rx="12" fill="url(#accentGrad)" />
+  <!-- Brillo sutil en el mostrador -->
+  <rect x="140" y="324" width="232" height="12" rx="6" fill="#FFFFFF" opacity="0.2" />
+
+  <!-- ESCALONES (La base del Ágora) -->
+  <rect x="110" y="410" width="292" height="24" rx="8" fill="#F1F5F9" />
+  <rect x="80" y="434" width="352" height="24" rx="12" fill="#CBD5E1" />
+</svg>

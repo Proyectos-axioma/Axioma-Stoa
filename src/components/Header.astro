@@ -1,0 +1,93 @@
+---
+import { SITE_TITLE } from '../consts';
+import HeaderLink from './HeaderLink.astro';
+import { Icon } from 'astro-icon/components';
+---
+
+<header>
+    <div class="navbar shadow-lg">
+        <div class="navbar-start w-auto px-1">
+            <div class="drawer w-auto z-50">
+                <input id="my-drawer-5" type="checkbox" class="drawer-toggle" />
+<!-- Icono de menú -->
+                <div class="drawer-content">
+                    <label for="my-drawer-5" class="drawer-button btn btn-square btn-ghost">
+                        <Icon name="tabler:align-justified" class="w-6 h-6 stroke-2" />
+                    </label>
+                </div>
+                <div class="drawer-side">
+                    <label for="my-drawer-5" aria-label="close sidebar" class="drawer-overlay"></label>
+<!--Opciones del drawer -->
+                    <ul class="menu bg-base-200 min-h-full w-80 p-4 text-xl">
+                        <div class="my-6 flex w-full font-semibold gap-2">
+                            <Icon name="tabler:building-store" class="w-6 h-6 stroke-2" />  {SITE_TITLE}
+                        </div>
+                        <li><HeaderLink href="/">Inicio</HeaderLink></li>
+                        <li><HeaderLink href="/productos">Productos</HeaderLink></li>
+                        <li><HeaderLink href="/blog">Blog</HeaderLink></li>
+                        <li><HeaderLink href="/nosotros">Sobre nosotros</HeaderLink></li>
+                    </ul>
+                </div>
+            </div>
+<!-- Logo y nombre del sitio -->
+            <div class="px-1">
+                <a href="/" class="btn btn-ghost text-2xl">
+                    <Icon name="tabler:building-store" class="w-6 h-6 stroke-2" />  {SITE_TITLE}
+                </a>
+            </div>
+        </div>
+<!--Barra de busqueda -->
+        <div class="navbar-center flex-1 px-4">
+            <!-- Quitamos max-w-md, dejamos w-full -->
+            <form action="/productos" method="GET" class="w-full">
+                <label class="input w-full rounded-full flex items-center gap-2 bg-base-200">
+                    <input type="text" name="q" placeholder="Busca tu producto..." class="grow" />
+                    <Icon name="tabler:search" class="w-6 h-6 stroke-2" />
+                </label>
+            </form>
+        </div>
+        <div class="navbar-end w-auto px-4">
+<!--Botón para cambiar de temas -->
+            <label class="swap swap-rotate btn btn-ghost btn-circle">
+                <input type="checkbox" id="theme-toggle" />
+                <Icon name="tabler:sun-filled" class="w-6 h-6 stroke-2 text-yellow-500 swap-off" />
+                <Icon name="tabler:moon-filled" class="w-6 h-6 stroke-2 text-blue-300 swap-on" />
+            </label>
+        </div>
+    </div>
+</header>
+<script is:inline>
+//Temas
+    const TEMA_CLARO = 'corporate';
+    const TEMA_OSCURO = 'business';
+  
+    const themeToggle = document.getElementById('theme-toggle');
+    const htmlElement = document.documentElement;
+
+//Lectura del sistema y sus preferencias de tema
+    const temaGuardado = localStorage.getItem('preferencia-tema');
+    const sistemaOscuro = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+//Aplicamos tema
+    const aplicarTema = (esOscuro) => {
+        htmlElement.setAttribute('data-theme', esOscuro ? TEMA_OSCURO : TEMA_CLARO);
+        if (themeToggle) themeToggle.checked = esOscuro;
+    };
+
+//Se decide el tema a cargar
+    if (temaGuardado === 'oscuro' || (!temaGuardado && sistemaOscuro)) {
+        aplicarTema(true);
+    }
+    else {
+        aplicarTema(false);
+    }
+
+//Leemos el botón
+    if (themeToggle) {
+        themeToggle.addEventListener('change', (e) => {
+            const activarOscuro = e.target.checked;
+            aplicarTema(activarOscuro);
+            localStorage.setItem('preferencia-tema', activarOscuro ? 'oscuro' : 'claro');
+        });
+    }
+</script>

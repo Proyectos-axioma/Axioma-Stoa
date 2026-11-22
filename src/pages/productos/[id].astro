@@ -1,0 +1,155 @@
+---
+// Página de productos individuales
+import Layout from '../../layouts/Layout.astro';
+import { getCollection, render } from 'astro:content';
+import { Image } from 'astro:assets';
+import { Icon } from 'astro-icon/components';
+import type { CollectionEntry } from 'astro:content';
+import { SITE_TITLE } from '../../consts';
+import { SITE_CONTACTO } from '../../consts';
+import ProductosRelacionados from '../../components/ProductosRelacionados.astro';
+export async function getStaticPaths() {
+    const productos = await getCollection('productos');
+    return productos.map((producto: CollectionEntry<'productos'>) => ({
+        params: { id: producto.id },
+        props: { producto },
+    }));
+}
+const { producto } = Astro.props;
+const { Content } = await render(producto); 
+// LÓGICA DE WHATSAPP
+const precioFinal = producto.data.precioDescuento && producto.data.precioDescuento < producto.data.precio ? producto.data.precioDescuento : producto.data.precio;
+const mensaje = `Hola, me interesa el producto "${producto.data.nombre}" que cuesta $${precioFinal}. ¿Aún está disponible?`;
+const urlWhatsApp = `https://wa.me/${SITE_CONTACTO}?text=${encodeURIComponent(mensaje)}`;
+---
+<Layout title={`${producto.data.nombre} | ${SITE_TITLE}`} description={producto.data.descripcion} image={producto.data.imagenPrincipal}>
+    <main class="container mx-auto p-4 py-8">
+    <div class="text-sm breadcrumbs mb-8">
+        <ul>
+            <li><a href="/">Inicio</a></li>
+            <li><a href="/productos">Productos</a></li>
+            <li>{producto.data.nombre}</li>
+        </ul>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<!-- Columna Izquierda: Galería Interactiva -->
+        <div class="flex flex-col gap-4">
+<!-- Agregamos id="imagen-principal" -->
+            <Image 
+            id="imagen-principal"
+            src={producto.data.imagenPrincipal} 
+            alt={producto.data.nombre} 
+            class="rounded-2xl shadow-xl w-full object-cover aspect-square transition-opacity duration-300"
+            />
+<!-- Galería de miniaturas -->
+            {producto.data.imagenesSecundarias && (
+                <div class="flex gap-2 overflow-x-auto pb-2" id="galeria-miniaturas">
+<!-- La foto principal como primera miniatura (activa por defecto) -->
+                    <button class="miniatura-btn border-2 border-primary rounded-lg overflow-hidden flex-shrink-0 opacity-100">
+                        <Image 
+                        src={producto.data.imagenPrincipal} 
+                        alt="Miniatura principal" 
+                        class="w-20 h-20 sm:w-24 sm:h-24 object-cover"
+                        />
+                    </button>
+<!-- El resto de las fotos secundarias -->
+                    {producto.data.imagenesSecundarias.map((img: any, index: number) => (
+                        <button class="miniatura-btn border-2 border-transparent rounded-lg overflow-hidden flex-shrink-0 opacity-60 hover:opacity-100 transition-all">
+                            <Image 
+                            src={img} 
+                            alt={`Vista ${index + 2} de ${producto.data.nombre}`} 
+                            class="w-20 h-20 sm:w-24 sm:h-24 object-cover"
+                            />
+                        </button>
+                    ))}
+                </div>
+            )}
+        </div>
+<!-- Columna Derecha: Información -->
+        <div>
+            <div class="flex flex-wrap gap-2 mb-4">
+                {producto.data.destacado && (
+                    <span class="badge badge-accent badge-lg">¡Destacado!</span>
+                )}
+                {producto.data.categorias.map((cat: string) => (
+                    <a href={`/productos?categoria=${encodeURIComponent(cat)}`} class="badge badge-lg badge-primary">{cat}</a>
+                ))}
+                {producto.data.subcategorias?.map((cat: string) => (
+                    <a href={`/productos?subcategoria=${encodeURIComponent(cat)}`} class="badge badge-lg badge-secondary">{cat}</a>
+                ))}
+<!-- Mostrar que está agotado, si aplica -->
+                {!producto.data.disponibilidad && (
+                    <span class="badge badge-error badge-lg">Agotado</span>
+                )}
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">{producto.data.nombre}</h1>
+            <div class="flex items-end gap-3 mb-6">
+                {producto.data.precioDescuento && producto.data.precioDescuento < producto.data.precio ? (
+                    <>
+                        <p class="text-4xl font-bold text-error">${producto.data.precioDescuento}</p>
+                        <p class="text-2xl font-semibold line-through opacity-50 mb-1">${producto.data.precio}</p>
+                        <div class="badge badge-error badge-outline ml-1 mb-2">
+                            -{Math.round(((producto.data.precio - producto.data.precioDescuento) / producto.data.precio) * 100)}%
+                        </div>
+                    </>
+                ) : (
+                    <p class="text-4xl font-bold text-primary">${producto.data.precio}</p>
+                )}
+            </div>
+            <p class="text-lg text-base-content/80 mb-8 leading-relaxed">
+                {producto.data.descripcion}
+            </p>
+<!-- Botón de Compra con validación de Stock -->
+            <div class="flex flex-col sm:flex-row gap-4 mb-10">
+                {producto.data.disponibilidad ? (
+                    <a href={urlWhatsApp} target="_blank" rel="noopener noreferrer" class="btn btn-success btn-lg flex-1 shadow-lg hover:shadow-primary/50 transition-shadow">
+                        <Icon name="tabler:brand-whatsapp" class="w-6 h-6" />
+                        Comprar ahora
+                    </a>
+                ) : (
+                    <button class="btn btn-disabled btn-lg flex-1" disabled>
+                        <Icon name="tabler:shopping-cart-off" class="w-6 h-6" />
+                        Producto sin stock
+                    </button>
+                )}
+            </div>
+            <div class="divider">Más detalles</div>
+            <article class="prose prose-base sm:prose-lg text-base-content max-w-none">
+                <Content />
+            </article>
+        </div>
+    </div>
+    <ProductosRelacionados 
+    categoriasActuales={producto.data.categorias}
+    subcategoriasActuales={producto.data.subcategorias}
+    idActual={producto.id}
+    />
+    </main>
+</Layout>
+<!-- Script para la galería interactiva -->
+<script is:inline>
+    document.addEventListener('DOMContentLoaded', () => {
+        const imagenPrincipal = document.getElementById('imagen-principal');
+        const botonesMiniatura = document.querySelectorAll('.miniatura-btn');
+        if (imagenPrincipal && botonesMiniatura.length > 0) {
+            botonesMiniatura.forEach(boton => {
+                boton.addEventListener('click', function() {
+// Extraemos la imagen dentro del botón presionado
+                    const imgAdentro = this.querySelector('img');
+                    if (imgAdentro) {
+// Intercambiamos tanto src como srcset (Astro usa srcset para optimización)
+                        imagenPrincipal.src = imgAdentro.src;
+                        imagenPrincipal.srcset = imgAdentro.srcset;
+// Efecto visual para mostrar qué foto está seleccionada
+                        botonesMiniatura.forEach(b => {
+                            b.classList.remove('border-primary', 'opacity-100');
+                            b.classList.add('border-transparent', 'opacity-60');
+                        });
+                        this.classList.remove('border-transparent', 'opacity-60');
+                        this.classList.add('border-primary', 'opacity-100');
+                    }
+                });
+            });
+        }
+    });
+</script>

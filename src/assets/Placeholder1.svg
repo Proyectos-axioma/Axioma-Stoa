@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400" fill="none">
+  <!-- Borde punteado transparente -->
+  <rect x="10" y="10" width="380" height="380" rx="32" stroke="#94A3B8" stroke-width="3" stroke-dasharray="12 12" fill="transparent" opacity="0.5" />
+  
+  <!-- Icono de Galería / Imágenes apiladas -->
+  <svg x="136" y="110" width="128" height="128" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="1.5">
+    <rect x="3" y="3" width="14" height="14" rx="2" ry="2"></rect>
+    <path d="M7 21h12a2 2 0 0 0 2-2V7"></path>
+  </svg>
+  
+  <!-- Textos -->
+  <text x="200" y="270" font-family="sans-serif" font-size="20" font-weight="600" fill="#94A3B8" text-anchor="middle">IMAGEN SECUNDARIA</text>
+  <text x="200" y="300" font-family="sans-serif" font-size="14" fill="#94A3B8" opacity="0.7" text-anchor="middle">400 x 400 px</text>
+</svg>

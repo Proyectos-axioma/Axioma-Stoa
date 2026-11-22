@@ -1,0 +1,134 @@
+---
+// Categorias generales de productos
+import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
+import { Icon } from 'astro-icon/components';
+import type { CollectionEntry } from 'astro:content';
+
+const productos = await getCollection('productos');
+// Agrupamos las categorías, las contamos y extraemos una imagen de portada
+const categoriasMap = new Map();
+productos.forEach((p: CollectionEntry<'productos'>) => {
+    p.data.categorias.forEach((cat: string) => {
+        if (!categoriasMap.has(cat)) {
+            categoriasMap.set(cat, {
+                nombre: cat,
+                count: 1,
+// Usamos la imagen del primer producto que encontremos en esta categoría
+                imagen: p.data.imagenPrincipal
+            });
+        } else {
+            const data = categoriasMap.get(cat);
+            data.count += 1;
+            categoriasMap.set(cat, data);
+        }
+    });
+});
+// Convertimos el Map a un arreglo para iterarlo
+const categorias = Array.from(categoriasMap.values());
+---
+{categorias.length > 0 && (
+    <section class="py-12 my-8 relative max-w-7xl mx-auto px-4 md:px-8">
+<!-- Título centrado -->
+        <h2 class="text-3xl md:text-4xl font-bold text-center mb-10 tracking-wide">Categorías</h2>
+<!-- Contenedor relativo para posicionar las flechas -->
+        <div class="relative group">
+<!-- Carrusel -->
+            <div id="carrusel-colecciones" class="carousel w-full gap-6 scroll-smooth cursor-grab active:cursor-grabbing select-none overflow-x-auto no-scrollbar pb-6">
+                {categorias.map((cat) => (
+                    <div class="carousel-item flex-col w-72 md:w-[22rem] snap-start">
+                        <a href={`/productos?categoria=${encodeURIComponent(cat.nombre)}`} class="group/card block w-full">
+<!-- Caja de la imagen con fondo gris suave y bordes redondeados -->
+                            <div class="bg-base-200/50 rounded-xl overflow-hidden aspect-[4/3] mb-6 flex items-center justify-center p-4">
+                                <Image 
+                                src={cat.imagen} 
+                                alt={`Colección ${cat.nombre}`} 
+                                draggable="false"
+                                class="w-full h-full object-contain group-hover/card:scale-105
+                                transition-transform duration-500 drop-shadow-md"
+                                />
+                            </div>
+<!-- Textos inferiores -->
+                            <div class="text-center">
+                                <h3 class="text-xl md:text-2xl font-semibold mb-2">{cat.nombre}</h3>
+                                <p class="text-sm md:text-base opacity-60">
+                                    {cat.count} {cat.count === 1 ? 'item' : 'items'}
+                                </p>
+                            </div>
+                        </a>
+                    </div>
+                ))}
+            </div>
+<!-- Botones de navegación (Flechas) flotando sobre las imágenes -->
+<!-- Usamos top-[35%] para centrarlos verticalmente respecto a las fotos, no a todo el bloque -->
+            {categorias.length > 3 && (
+                <>
+                    <button id="btn-prev-col" class="absolute left-0 top-[35%] -translate-y-1/2 -translate-x-4 md:-translate-x-6 btn btn-square btn-md bg-base-100 shadow-xl opacity-0 group-hover:opacity-100 transition-opacity z-10 hidden md:flex hover:scale-110" aria-label="Anterior">
+                        <Icon name="tabler:arrow-left" class="w-5 h-5 text-base-content" />
+                    </button>
+                    <button id="btn-next-col" class="absolute right-0 top-[35%] -translate-y-1/2 translate-x-4 md:translate-x-6 btn btn-square btn-md bg-base-100 shadow-xl opacity-0 group-hover:opacity-100 transition-opacity z-10 hidden md:flex hover:scale-110" aria-label="Siguiente">
+                        <Icon name="tabler:arrow-right" class="w-5 h-5 text-base-content" />
+                    </button>
+                </>
+            )}
+        </div>
+    </section>
+)}
+<script is:inline>
+    document.addEventListener('DOMContentLoaded', () => {
+        const sliderCol = document.getElementById('carrusel-colecciones');
+        const btnPrev = document.getElementById('btn-prev-col');
+        const btnNext = document.getElementById('btn-next-col');
+        if (sliderCol) {
+// Lógica de las flechas
+            const scrollAmount = 350; 
+            if (btnPrev) {
+                btnPrev.addEventListener('click', () => {
+                    sliderCol.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+                });
+            }
+            if (btnNext) {
+                btnNext.addEventListener('click', () => {
+                    sliderCol.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+                });
+            }
+// Lógica de arrastrar con el mouse en PC
+            let isDown = false;
+            let isDragging = false;
+            let startX;
+            let scrollLeft;
+            sliderCol.addEventListener('mousedown', (e) => {
+                isDown = true;
+                isDragging = false;
+                startX = e.pageX - sliderCol.offsetLeft;
+                scrollLeft = sliderCol.scrollLeft;
+                sliderCol.style.scrollSnapType = 'none';
+            });
+            sliderCol.addEventListener('mouseleave', () => {
+                isDown = false;
+                sliderCol.style.scrollSnapType = '';
+            });
+            sliderCol.addEventListener('mouseup', () => {
+                isDown = false;
+                sliderCol.style.scrollSnapType = '';
+            });
+            sliderCol.addEventListener('mousemove', (e) => {
+                if (!isDown) return;
+                const x = e.pageX - sliderCol.offsetLeft;
+                if (Math.abs(x - startX) > 5) {
+                    isDragging = true;
+                }
+                e.preventDefault();
+                const walk = (x - startX) * 1.5;
+                sliderCol.scrollLeft = scrollLeft - walk;
+            });
+            sliderCol.addEventListener('click', (e) => {
+                if (isDragging) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    isDragging = false;
+                }
+            }, true);
+        }
+    });
+</script>

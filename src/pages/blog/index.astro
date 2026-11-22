@@ -1,0 +1,77 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import FormattedDate from '../../components/FormattedDate.astro';
+import Header from '../../components/Header.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
+// Obtenemos los posts, filtramos los borradores y ordenamos por destacado y luego por fecha
+const posts = (await getCollection('blog'))
+	.filter((post) => !post.data.draft)
+	.sort((a, b) => {
+		if (a.data.destacado !== b.data.destacado) {
+			return a.data.destacado ? -1 : 1;
+		}
+		return b.data.pubDate.valueOf() - a.data.pubDate.valueOf();
+	});
+---
+<!doctype html>
+<html lang="es-MX">
+	<head>
+		<BaseHead title={`Blog | ${SITE_TITLE}`} description={SITE_DESCRIPTION} />
+	</head>
+	<body>
+		<Header />
+		<main class="container mx-auto px-4 py-12 max-w-7xl">
+			<h1 class="text-4xl md:text-5xl font-bold text-center mb-12">Blog y Novedades</h1>
+			<section>
+				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+					{posts.map((post: any, index: number) => (
+						<div class={`card bg-base-100 shadow-xl transition-transform hover:-translate-y-2 border border-base-200 ${index === 0 ? 'md:col-span-2 lg:col-span-3 md:flex-row' : ''}`}>
+							<figure class={index === 0 ? 'md:w-1/2' : ''}>
+  								<a href={`/blog/${post.id}/`} class="w-full h-full block bg-base-200 rounded-xl overflow-hidden">
+    								{post.data.heroImage && (
+      									<Image 
+        								width={720} height={360} 
+        								src={post.data.heroImage} 
+        								alt={post.data.title} 
+        								class={`w-full object-cover ${index === 0 ? 'h-64 md:h-full' : 'h-48'}`} 
+      									/>
+    								)}
+  								</a>
+							</figure>
+							<div class={`card-body ${index === 0 ? 'md:w-1/2 justify-center' : ''}`}>
+								<div class="flex items-center gap-2 mb-2">
+									{post.data.categoria && (
+										<span class="badge badge-primary badge-sm">{post.data.categoria}</span>
+									)}
+									{post.data.destacado && (
+										<span class="badge badge-accent badge-sm">¡Destacado!</span>
+									)}
+								</div>
+								<h2 class={`card-title font-bold ${index === 0 ? 'text-3xl md:text-4xl' : 'text-xl md:text-2xl'}`}>
+									<a href={`/blog/${post.id}/`} class="hover:text-primary transition-colors">
+										{post.data.title}
+									</a>
+								</h2>
+								<div class="text-sm opacity-70 mt-2 flex flex-wrap items-center gap-2 font-medium">
+									<FormattedDate date={post.data.pubDate} />
+									<span>•</span>
+									<span>{post.data.author}</span>
+								</div>
+								<p class="mt-4 opacity-80 line-clamp-3 leading-relaxed">
+									{post.data.description}
+								</p>
+								<div class="card-actions justify-end mt-6">
+									<a href={`/blog/${post.id}/`} class="btn btn-neutral btn-sm">Leer artículo</a>
+								</div>
+							</div>
+						</div>
+					))}
+				</div>
+			</section>
+		</main>
+		<Footer />
+	</body>
+</html>

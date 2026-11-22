@@ -1,0 +1,47 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { SITE_TITLE } from '../consts';
+---
+<Layout title={`Sobre Nosotros | ${SITE_TITLE}`} description="Conoce más sobre nuestra historia, misión y valores.">
+	<main class="container mx-auto px-4 py-12 max-w-6xl">
+		<div class="text-center mb-16">
+			<h1 class="text-4xl md:text-6xl font-extrabold mb-4">Nuestra Historia</h1>
+			<p class="text-lg opacity-70 max-w-2xl mx-auto">
+				{SITE_TITLE} nació de una idea simple: ofrecer productos de alta calidad con un diseño excepcional, acercándolos a personas que valoran los detalles.
+			</p>
+		</div>
+<!-- Sección Imagen + Texto -->
+	    <div class="flex flex-col md:flex-row items-center gap-12 mb-20">
+			<div class="w-full md:w-1/2">
+<!-- Reemplaza el src con una imagen genérica o usa un div con bg-base-200 -->
+		        <div class="w-full aspect-[4/3] bg-base-200 rounded-3xl overflow-hidden shadow-xl flex items-center justify-center">
+        		    <span class="opacity-50">[Imagen del equipo o tienda física]</span>
+        		</div>
+      		</div>
+      		<div class="w-full md:w-1/2 prose prose-lg text-base-content">
+        		<h2>¿Quiénes somos?</h2>
+		        <p>
+					Somos un equipo apasionado por [Industria del cliente, ej: la tecnología / el diseño interior]. Nuestro objetivo es redefinir la forma en que interactúas con los productos del día a día.
+        		</p>
+		        <p>
+					Trabajamos directamente con proveedores seleccionados para garantizar que cada artículo que llega a tus manos cumpla con los más altos estándares de calidad.
+        		</p>
+      		</div>
+    	</div>
+<!-- Valores -->
+	    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+			<div class="bg-base-200 p-8 rounded-2xl">
+        		<h3 class="text-2xl font-bold mb-3">Calidad</h3>
+        		<p class="opacity-70">Materiales de primera y procesos rigurosos en cada artículo de nuestro catálogo.</p>
+			</div>
+			<div class="bg-base-200 p-8 rounded-2xl">
+        		<h3 class="text-2xl font-bold mb-3">Compromiso</h3>
+        		<p class="opacity-70">Atención al cliente excepcional y tiempos de envío optimizados para tu comodidad.</p>
+			</div>
+			<div class="bg-base-200 p-8 rounded-2xl">
+        		<h3 class="text-2xl font-bold mb-3">Innovación</h3>
+        		<p class="opacity-70">Buscamos constantemente las últimas tendencias para mantener nuestro catálogo actualizado.</p>
+      		</div>
+    	</div>
+	</main>
+</Layout>

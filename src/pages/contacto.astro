@@ -1,0 +1,102 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { SITE_TITLE } from '../consts';
+import { Icon } from 'astro-icon/components';
+import { SITE_CONTACTO } from '../consts';
+import { SITE_CORREO } from '../consts';
+function formatearTelefono(numero: string | number) {
+// Asegura que sea string y limpia cualquier carácter que no sea número
+    const limpio = String(numero).replace(/\D/g, '');
+// Aplica el formato +52 (55) 0000-0000
+    return limpio.replace(/^(\d{2})(\d{2})(\d{4})(\d{4})$/, '+$1 ($2) $3-$4');
+}
+const telefonoFormateado = formatearTelefono(SITE_CONTACTO);
+---
+
+<Layout title={`Contacto | ${SITE_TITLE}`} description="Ponte en contacto con nuestro equipo de atención al cliente.">
+    <main class="container mx-auto px-4 py-12 max-w-6xl">
+        <div class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-extrabold mb-4">Contáctanos</h1>
+            <p class="text-lg opacity-70">¿Tienes alguna duda o sugerencia? Estamos aquí para ayudarte.</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 bg-base-100 rounded-3xl shadow-xl overflow-hidden">
+<!-- Columna Izquierda: Información -->
+            <div class="bg-neutral text-neutral-content p-8 md:p-12 flex flex-col justify-center">
+                <h2 class="text-3xl font-bold mb-8">Información de contacto</h2>
+                <div class="space-y-6">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-primary text-primary-content rounded-full flex items-center justify-center flex-shrink-0">
+                            <Icon name="tabler:map-pin" class="w-6 h-6" />
+                        </div>
+                        <div>
+                            <p class="font-bold">Nuestra Tienda</p>
+                            <p class="opacity-80">Av. Principal #123, Ciudad, País</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-primary text-primary-content rounded-full flex items-center justify-center flex-shrink-0">
+                            <Icon name="tabler:phone" class="w-6 h-6" />
+                        </div>
+                        <div>
+                            <p class="font-bold">Teléfono</p>
+                            <p class="opacity-80">{telefonoFormateado}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-primary text-primary-content rounded-full flex items-center justify-center flex-shrink-0">
+                            <Icon name="tabler:mail" class="w-6 h-6" />
+                        </div>
+                        <div>
+                            <p class="font-bold">Correo Electrónico</p>
+                            <p class="opacity-80">{SITE_CORREO}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+<!-- Columna Derecha: Formulario -->
+            <div class="p-8 md:p-12">
+                <form id="contact-form" data-telefono={SITE_CONTACTO} class="space-y-6">
+                    <fieldset class="fieldset w-full">
+                        <label class="fieldset-label text-base font-semibold text-base-content" for="contacto-nombre">Nombre completo</label>
+                        <input id="contacto-nombre" type="text" name="nombre" placeholder="Ej. Juan Pérez" class="input w-full" required />
+                    </fieldset>
+                    <fieldset class="fieldset w-full">
+                        <label class="fieldset-label text-base font-semibold text-base-content" for="contacto-correo">Correo electrónico</label>
+                        <input id="contacto-correo" type="email" name="correo" placeholder="ejemplo@correo.com" class="input w-full" required />
+                    </fieldset>
+                    <fieldset class="fieldset w-full">
+                        <label class="fieldset-label text-base font-semibold text-base-content" for="contacto-mensaje">Mensaje</label>
+                        <textarea id="contacto-mensaje" name="mensaje" class="textarea h-32 w-full" placeholder="¿En qué podemos ayudarte?" required></textarea>
+                    </fieldset>
+                    <button type="submit" class="btn btn-success btn-lg w-full sm:w-auto shadow-lg hover:shadow-primary/50 transition-shadow">
+                        <Icon name="tabler:brand-whatsapp" class="w-6 h-6" />
+                        Contactar
+                    </button>
+                </form>
+            </div>
+        </div>
+    </main>
+</Layout>
+<script>
+    const form = document.getElementById("contact-form") as HTMLFormElement | null;
+
+    if (form) {
+        form.addEventListener("submit", (e) => {
+            e.preventDefault();
+
+            const data = new FormData(form);
+            const nombre = data.get("nombre") as string;
+            const correo = data.get("correo") as string;
+            const mensaje = data.get("mensaje") as string;
+            const telefono = form.dataset.telefono;
+
+            const texto =
+                `*Nombre:* ${nombre}\n` +
+                `*Correo:* ${correo}\n` +
+                `*Mensaje:* ${mensaje}`;
+
+            const url = `https://wa.me/${telefono}?text=${encodeURIComponent(texto)}`;
+            window.open(url, "_blank", "noopener,noreferrer");
+        });
+    }
+</script>
